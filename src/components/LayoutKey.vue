@@ -21,12 +21,10 @@ const rows = computed(() => {
 });
 
 const keyStyle = computed(() => {
-  const padding = 2;
-  const size = `${KeySize - padding / 2}px`;
+  const size = `${KeySize}px`;
   return {
     width: size,
     height: size,
-    padding: `${padding}px`,
   };
 });
 </script>
@@ -49,5 +47,6 @@ const keyStyle = computed(() => {
   display: grid;
   justify-content: center;
   align-items: center;
+  border: 3px solid rgb(83, 83, 83);
 }
 </style>

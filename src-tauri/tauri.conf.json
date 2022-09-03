@@ -55,10 +55,18 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
-        "resizable": true,
+        "width": 820,
+        "height": 370,
+        "x": 1950,
+        "y": 775,
+        "resizable": false,
         "title": "layout",
-        "width": 800
+        "fileDropEnabled": false,
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "focus": false,
+        "visible": true
       }
     ]
   }

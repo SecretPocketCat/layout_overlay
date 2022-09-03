@@ -148,7 +148,7 @@ export const winLayer: BoardLayer = {
 function getShiftedEmojiKey(emoji: string, shiftedEmoji: string): KeyLabel {
   const getEmojiLabel: (e: string) => LabelValue = (e: string) => ({
     label: e,
-    style: { filter: null },
+    style: { filter: null, fontSize: "20px" },
   });
   return [getEmojiLabel(emoji), getEmojiLabel(shiftedEmoji)];
 }

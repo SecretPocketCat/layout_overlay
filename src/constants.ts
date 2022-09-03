@@ -1,1 +1,1 @@
-export const KeySize = 52;
+export const KeySize = 55;

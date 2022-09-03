@@ -42,12 +42,12 @@ const columns: LayerColumn[] = [
   },
   {
     keys: props.layer.left.indexOuter as any,
-    styleClass: "mt-8 mr-6",
+    styleClass: "mt-8 mr-4",
   },
   // right
   {
     keys: props.layer.right.indexOuter as any,
-    styleClass: "mt-8 ml-6",
+    styleClass: "mt-8 ml-4",
   },
   {
     keys: props.layer.right.index as any,
@@ -88,7 +88,7 @@ const thumbs: LayerThumb[] = [
   // right
   {
     key: props.layer.right.thumb[0],
-    styleClass: "ml-[40px] mt-[27px] mr-[4px] rotate-[-24deg]",
+    styleClass: "ml-[45px] mt-[27px] mr-[4px] rotate-[-24deg]",
   },
   {
     key: props.layer.right.thumb[1],
