@@ -13,6 +13,9 @@
     "allowlist": {
       "all": true
     },
+    "systemTray": {
+      "iconPath": "icons/icon.png"
+    },
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
@@ -28,7 +31,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.spc.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -66,7 +69,8 @@
         "decorations": false,
         "alwaysOnTop": true,
         "focus": false,
-        "visible": true
+        "visible": true,
+        "skipTaskbar": true
       }
     ]
   }
