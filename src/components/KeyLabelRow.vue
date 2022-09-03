@@ -10,11 +10,15 @@ interface RowProps {
 const props = defineProps<RowProps>();
 
 const labelText = computed(() => {
+  let txt = null;
+
   if (isStyledLabel(props.label)) {
-    return props.label.label;
+    txt = props.label.label;
   } else {
-    return props.label;
+    txt = props.label;
   }
+
+  return txt?.toUpperCase();
 });
 
 const labelStyle = computed(() => {
@@ -38,9 +42,25 @@ const labelStyle = computed(() => {
 </script>
 
 <template>
-  <div :style="labelStyle">
-    {{ labelText }}
-  </div>
+  <Transition mode="out-in" appear>
+    <div :key="labelText" :style="labelStyle" class="row">
+      {{ labelText }}
+    </div>
+  </Transition>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.row {
+  filter: grayscale(1);
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>

@@ -33,12 +33,10 @@ const keyStyle = computed(() => {
 
 <template>
   <div class="key" :style="keyStyle">
-    <KeyLabelRow
-      v-for="(r, i) in rows"
-      :key="i"
-      :label="r"
-      :row-count="rows.length"
-    />
+    <div v-for="(r, i) in rows" :key="i">
+      <KeyLabelRow :label="r" :row-count="rows.length" />
+      <hr v-if="i < rows.length - 1" class="border-t-gray-500" />
+    </div>
   </div>
 </template>
 

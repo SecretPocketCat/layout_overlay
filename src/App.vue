@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import LayoutLayer from "./components/LayoutLayer.vue";
-import { alphaLayer } from "./boardLayout";
+import BoardLayout from "./components/BoardLayout.vue";
 </script>
 
 <template>
-  <LayoutLayer :layer="alphaLayer" />
+  <BoardLayout />
 </template>
 
 <style scoped></style>
