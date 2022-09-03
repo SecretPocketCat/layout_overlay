@@ -55,10 +55,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "width": 820,
-        "height": 370,
+        "width": 800,
+        "height": 330,
         "x": 1950,
-        "y": 775,
+        "y": 770,
         "resizable": false,
         "title": "layout",
         "fileDropEnabled": false,

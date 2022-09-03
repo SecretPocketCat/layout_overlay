@@ -112,7 +112,7 @@ const thumbs: LayerThumb[] = [
       </div>
     </div>
 
-    <div class="flex flex-row">
+    <div class="flex flex-row thumbs">
       <LayoutKey
         v-for="(t, i) in thumbs"
         :key="i"
@@ -123,3 +123,9 @@ const thumbs: LayerThumb[] = [
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.thumbs {
+  height: 75px;
+}
+</style>

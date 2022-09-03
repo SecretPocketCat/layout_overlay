@@ -22,12 +22,13 @@ let layerChangeCount = ref(0);
 
 const layerMap: Record<number, BoardLayer> = {
   13: alphaLayer,
-  14: winLayer, // todo: doesn't fire?
+  // 14: qwertyLayer,
   15: navLayer,
   16: numLayer,
   17: symLayer,
   18: funLayer,
   19: uniLayer,
+  20: winLayer,
 };
 
 if ((window as any).__TAURI__) {
@@ -44,30 +45,12 @@ if ((window as any).__TAURI__) {
         });
       }
     });
-
-    // for (let i = 13; i < 20; i++) {
-    //   const shortcut = `F${i}`;
-    //   if (!(await isRegistered(shortcut))) {
-    //     register(shortcut, (s) => {
-    //       console.warn(`Triggered shortcut '${s}'`);
-    //     });
-    //   }
-    // }
   });
 
   onUnmounted(async () => {
     await unregisterAll();
   });
 }
-
-// let x = 0;
-// onMounted(() => {
-//   setInterval(() => {
-//     layer.value = x % 2 === 0 ? navLayer : alphaLayer;
-//     x++;
-//     layerChangeCount.value++;
-//   }, 1500);
-// });
 </script>
 
 <template>

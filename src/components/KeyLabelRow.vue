@@ -53,7 +53,7 @@ const labelStyle = computed(() => {
 <style lang="scss" scoped>
 .v-enter-active,
 .v-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.1s ease-in-out;
 }
 
 .v-enter-from,
