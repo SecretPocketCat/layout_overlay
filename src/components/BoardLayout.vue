@@ -6,6 +6,9 @@ import {
   navLayer,
   numLayer,
   symLayer,
+  funLayer,
+  winLayer,
+  uniLayer,
 } from "../boardLayout";
 import {
   register,
@@ -14,12 +17,17 @@ import {
 } from "@tauri-apps/api/globalShortcut";
 import { onMounted, onUnmounted, Ref, ref } from "vue";
 
-let layer: Ref<BoardLayer | null> = ref(numLayer);
+let layer: Ref<BoardLayer | null> = ref(alphaLayer);
 let layerChangeCount = ref(0);
 
 const layerMap: Record<number, BoardLayer> = {
   13: alphaLayer,
+  14: winLayer, // todo: doesn't fire?
   15: navLayer,
+  16: numLayer,
+  17: symLayer,
+  18: funLayer,
+  19: uniLayer,
 };
 
 if ((window as any).__TAURI__) {
@@ -37,14 +45,14 @@ if ((window as any).__TAURI__) {
       }
     });
 
-    //   for (let i = 13; i < 20; i++) {
-    //     const shortcut = `F${i}`;
-    //     if (!(await isRegistered(shortcut))) {
-    //       register(shortcut, (s) => {
-    //         console.warn(`Triggered shortcut '${s}'`);
-    //       });
-    //     }
+    // for (let i = 13; i < 20; i++) {
+    //   const shortcut = `F${i}`;
+    //   if (!(await isRegistered(shortcut))) {
+    //     register(shortcut, (s) => {
+    //       console.warn(`Triggered shortcut '${s}'`);
+    //     });
     //   }
+    // }
   });
 
   onUnmounted(async () => {

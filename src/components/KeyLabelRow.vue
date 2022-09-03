@@ -33,6 +33,7 @@ const labelStyle = computed(() => {
 
   const st = {
     fontSize: `${size}px`,
+    filter: "grayscale(1)",
   };
 
   return isStyledLabel(props.label)
@@ -50,10 +51,6 @@ const labelStyle = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.row {
-  filter: grayscale(1);
-}
-
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.5s ease;
