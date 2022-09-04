@@ -131,7 +131,7 @@ export const winLayer: BoardLayer = {
     ring: [null, "", ""],
     middle: [null, "", ""],
     index: [null, "", ""],
-    indexOuter: [null, "🖮 "],
+    indexOuter: [null, "🖮"],
     thumb: [null, null, null],
   },
   right: {
