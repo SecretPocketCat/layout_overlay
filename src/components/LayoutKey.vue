@@ -5,6 +5,7 @@ import { KeyLabel } from "../boardLayout";
 
 interface KeyProps {
   label: KeyLabel;
+  home?: boolean;
 }
 
 const props = defineProps<KeyProps>();
@@ -30,7 +31,7 @@ const keyStyle = computed(() => {
 </script>
 
 <template>
-  <div class="key" :style="keyStyle">
+  <div :style="keyStyle" :class="{ home: home }" class="key">
     <div v-for="(r, i) in rows" :key="i">
       <KeyLabelRow :label="r" :row-count="rows.length" />
       <hr v-if="i < rows.length - 1" class="border-t-gray-500" />
@@ -39,14 +40,21 @@ const keyStyle = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+$border-col: rgb(83, 83, 83);
+
 .key {
-  background-color: rgb(225, 225, 225);
+  background-color: rgb(240, 240, 240);
   color: rgb(12, 12, 12);
   margin: 2px 3px;
   border-radius: 7px;
   display: grid;
   justify-content: center;
   align-items: center;
-  border: 3px solid rgb(83, 83, 83);
+  border: 3px solid $border-col;
+}
+
+.home {
+  border-color: rgb(72, 66, 62);
+  background-color: rgb(246, 232, 201);
 }
 </style>

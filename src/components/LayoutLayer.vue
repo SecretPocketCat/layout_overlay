@@ -14,6 +14,7 @@ interface LayerColumn {
 
 interface LayerThumb {
   key: KeyLabel;
+  homeKey?: boolean;
   styleClass?: string;
 }
 
@@ -70,6 +71,10 @@ const columns: LayerColumn[] = [
   },
 ];
 
+function isHomeRow(col: number, row: number): boolean {
+  return ((col >= 1 && col <= 4) || (col >= 7 && col <= 10)) && row == 1;
+}
+
 const thumbShift = "-translate-y-6";
 const thumbs: LayerThumb[] = [
   // left
@@ -79,6 +84,7 @@ const thumbs: LayerThumb[] = [
   },
   {
     key: props.layer.left.thumb[1],
+    homeKey: true,
     styleClass: "mt-[8px] ml-[6px] rotate-[12deg]",
   },
   {
@@ -92,6 +98,7 @@ const thumbs: LayerThumb[] = [
   },
   {
     key: props.layer.right.thumb[1],
+    homeKey: true,
     styleClass: "mt-[8px] mr-[6px] rotate-[-12deg]",
   },
   {
@@ -108,7 +115,12 @@ const thumbs: LayerThumb[] = [
         :class="c.styleClass"
         class="flex flex-col"
       >
-        <LayoutKey v-for="(k, j) in c.keys" :key="j" :label="k" />
+        <LayoutKey
+          v-for="(k, j) in c.keys"
+          :key="j"
+          :label="k"
+          :home="isHomeRow(i, j)"
+        />
       </div>
     </div>
 
@@ -117,6 +129,7 @@ const thumbs: LayerThumb[] = [
         v-for="(t, i) in thumbs"
         :key="i"
         :label="t.key"
+        :home="t.homeKey"
         :class="`${t.styleClass} ${thumbShift}`"
         class="flex flex-col"
       />
