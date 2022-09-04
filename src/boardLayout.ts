@@ -46,7 +46,6 @@ export const alphaLayer: BoardLayer = {
       "W",
       "R",
       [
-        "CTRL",
         {
           label: ",",
           style: {
@@ -54,9 +53,10 @@ export const alphaLayer: BoardLayer = {
             transform: "translateY(-10px)",
           },
         },
+        "CTRL",
       ],
     ],
-    middle: ["F", "S", ["SHFT", "("]],
+    middle: ["F", "S", ["(", "SHFT"]],
     index: ["P", "T", "V"],
     indexOuter: ["G", "D"],
     thumb: [
@@ -77,12 +77,11 @@ export const alphaLayer: BoardLayer = {
   right: {
     indexOuter: ["C", "H"],
     index: ["L", "N", "M"],
-    middle: ["U", "E", ["SHFT", ")"]],
+    middle: ["U", "E", [")", "SHFT"]],
     ring: [
       "Y",
       "I",
       [
-        "CTRL",
         {
           label: ".",
           style: {
@@ -90,9 +89,10 @@ export const alphaLayer: BoardLayer = {
             transform: "translateY(-10px)",
           },
         },
+        "CTRL",
       ],
     ],
-    pinky: ["B", "O", ["ALT", "?"]],
+    pinky: ["B", "O", ["?", "ALT"]],
     pinkyOuter: ["K"],
     thumb: [
       ["ENTER", Layer.fun],
@@ -131,7 +131,7 @@ export const winLayer: BoardLayer = {
     ring: [null, "", ""],
     middle: [null, "", ""],
     index: [null, "", ""],
-    indexOuter: [null, ""],
+    indexOuter: [null, "🖮 "],
     thumb: [null, null, null],
   },
   right: {
@@ -150,7 +150,7 @@ function getShiftedEmojiKey(emoji: string, shiftedEmoji: string): KeyLabel {
     label: e,
     style: { filter: null, fontSize: "20px" },
   });
-  return [getEmojiLabel(emoji), getEmojiLabel(shiftedEmoji)];
+  return [getEmojiLabel(shiftedEmoji), getEmojiLabel(emoji)];
 }
 
 export const uniLayer: BoardLayer = {
@@ -206,7 +206,7 @@ export const symLayer: BoardLayer = {
     pinky: ["%", "Q", null],
     ring: ["^", "X", "@"],
     middle: ["'", '"', "`"],
-    index: ["$", "&", "#"],
+    index: [["$", "€"], "&", "#"],
     indexOuter: ["~", "\\"],
     thumb: ["]", ":", "}"],
   },
