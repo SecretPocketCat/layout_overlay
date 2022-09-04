@@ -15,6 +15,7 @@ import {
   isRegistered,
   unregisterAll,
 } from "@tauri-apps/api/globalShortcut";
+import { emit } from "@tauri-apps/api/event";
 import { onMounted, onUnmounted, Ref, ref } from "vue";
 
 let layer: Ref<BoardLayer | null> = ref(alphaLayer);
@@ -38,13 +39,17 @@ if ((window as any).__TAURI__) {
       if (!(await isRegistered(shortcut))) {
         register(shortcut, (s) => {
           layer.value = x[1];
-          console.warn(
-            `Triggered shortcut '${s}', ${layer.value.left.index[1]}`
-          );
           layerChangeCount.value++;
         });
       }
     });
+
+    const toggleShortcut = "F24";
+    if (!(await isRegistered(toggleShortcut))) {
+      register(toggleShortcut, (s) => {
+        emit("toggle");
+      });
+    }
   });
 
   onUnmounted(async () => {

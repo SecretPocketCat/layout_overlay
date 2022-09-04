@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "@vue/reactivity";
 import KeyLabelRow from "./KeyLabelRow.vue";
-import { KeySize } from "../constants";
 import { KeyLabel } from "../boardLayout";
 
 interface KeyProps {
@@ -20,8 +19,9 @@ const rows = computed(() => {
   }
 });
 
+const keySize = 55;
 const keyStyle = computed(() => {
-  const size = `${KeySize}px`;
+  const size = `${keySize}px`;
   return {
     width: size,
     height: size,

@@ -3,6 +3,7 @@
     windows_subsystem = "windows"
 )]
 
+use tauri::AppHandle;
 use tauri::CustomMenuItem;
 use tauri::Manager;
 use tauri::SystemTray;
@@ -11,8 +12,8 @@ use tauri::SystemTrayMenu;
 use tauri::SystemTrayMenuItem;
 use window_vibrancy::apply_blur;
 
-static QUIT_ID: &str = "quit";
-static TOGGLE_ID: &str = "toggle";
+const QUIT_ID: &str = "quit";
+const TOGGLE_ID: &str = "toggle";
 
 fn main() {
     let quit = CustomMenuItem::new(QUIT_ID.to_string(), "Quit");
@@ -31,18 +32,7 @@ fn main() {
                     app.exit(0);
                 }
                 id if id == TOGGLE_ID => {
-                    let window = app.get_window("main").unwrap();
-                    let menu_item = app.tray_handle().get_item(TOGGLE_ID);
-
-                    if window.is_visible().unwrap() {
-                        // todo: this crashes
-                        window.hide().unwrap();
-                        menu_item.set_title("Show").unwrap();
-                    } else {
-                        // todo: fix - messes up pos
-                        window.show().unwrap();
-                        menu_item.set_title("Hide").unwrap();
-                    }
+                    toggle_overlay(app);
                 }
                 _ => {}
             },
@@ -50,11 +40,16 @@ fn main() {
         })
         .setup(|app| {
             let window = app.get_window("main").unwrap();
-
+            // events
+            let handle = app.handle();
+            app.listen_global("toggle", move |_| {
+                toggle_overlay(&handle);
+            });
             // todo:
             // tao
             // window.set_ignore_cursor_events(true);
 
+            // window blur
             #[cfg(target_os = "windows")]
             apply_blur(&window, None)
                 .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
@@ -63,4 +58,19 @@ fn main() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn toggle_overlay(app_handle: &AppHandle) {
+    let window = app_handle.get_window("main").unwrap();
+    let menu_item = app_handle.tray_handle().get_item(TOGGLE_ID);
+
+    if window.is_visible().unwrap() {
+        // todo: this crashes
+        window.hide().unwrap();
+        menu_item.set_title("Show").unwrap();
+    } else {
+        // todo: fix - messes up pos
+        window.show().unwrap();
+        menu_item.set_title("Hide").unwrap();
+    }
 }
