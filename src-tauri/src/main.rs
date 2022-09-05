@@ -11,6 +11,7 @@ use std::thread::sleep;
 use std::time::Duration;
 use tauri::AppHandle;
 use tauri::CustomMenuItem;
+use tauri::GlobalShortcutManager;
 use tauri::Manager;
 use tauri::SystemTray;
 use tauri::SystemTrayEvent;
@@ -65,12 +66,14 @@ fn main() {
         })
         .setup(|app| {
             let window = app.get_window("main").unwrap();
-            // events
-            let app_handle = app.handle();
-            app.listen_global("toggle", move |_| {
-                toggle_overlay(&app_handle.clone(), None);
-            });
 
+            // Global shortcuts
+            let app_handle = app.handle();
+            app.global_shortcut_manager()
+                .register("F24", move || toggle_overlay(&app_handle.clone(), None))
+                .unwrap();
+
+            // HID events
             let app_handle = app.handle();
             thread::spawn(move || loop {
                 let app_handle = app_handle.clone();
