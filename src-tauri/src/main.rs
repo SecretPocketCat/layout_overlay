@@ -23,6 +23,8 @@ const QUIT_ID: &str = "quit";
 const TOGGLE_ID: &str = "toggle";
 const LAYER_EV: &str = "layer";
 const CAPS_WORD_EV: &str = "capsword";
+const CAPS_LOCK_EV: &str = "capslock";
+const SHIFT_EV: &str = "shift";
 const HID_VENDOR_ID: u16 = 0x3a3c;
 const HID_PROD_ID: u16 = 0x0001;
 const HID_USAGE: u16 = 0x61;
@@ -33,6 +35,8 @@ enum BoardEvent {
     Connection(bool),
     Layer(u8),
     CapsWord(bool),
+    CapsLock(bool),
+    Shift(bool),
 }
 
 fn main() {
@@ -70,7 +74,9 @@ fn main() {
             // Global shortcuts
             let app_handle = app.handle();
             app.global_shortcut_manager()
-                .register("F24", move || toggle_overlay(&app_handle.clone(), None))
+                .register("CmdOrCtrl+F24", move || {
+                    toggle_overlay(&app_handle.clone(), None)
+                })
                 .unwrap();
 
             // HID events
@@ -84,8 +90,14 @@ fn main() {
                     BoardEvent::Layer(layer) => {
                         app_handle.emit_all(LAYER_EV, layer).unwrap();
                     }
-                    BoardEvent::CapsWord(on) => {
-                        app_handle.emit_all(CAPS_WORD_EV, on).unwrap();
+                    BoardEvent::CapsWord(active) => {
+                        app_handle.emit_all(CAPS_WORD_EV, active).unwrap();
+                    }
+                    BoardEvent::CapsLock(active) => {
+                        app_handle.emit_all(CAPS_LOCK_EV, active).unwrap();
+                    }
+                    BoardEvent::Shift(active) => {
+                        app_handle.emit_all(SHIFT_EV, active).unwrap();
                     }
                 };
             });
@@ -161,6 +173,8 @@ fn run_hid_loop(sender: Sender<BoardEvent>) {
                     match ev_type {
                         1 => sender.send(BoardEvent::Layer(ev_val)).unwrap(),
                         2 => sender.send(BoardEvent::CapsWord(ev_val != 0)).unwrap(),
+                        3 => sender.send(BoardEvent::CapsLock(ev_val != 0)).unwrap(),
+                        4 => sender.send(BoardEvent::Shift(ev_val != 0)).unwrap(),
                         _ => unimplemented!("Board event '{}' not implemended", ev_type),
                     };
                 }

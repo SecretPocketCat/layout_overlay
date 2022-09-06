@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "@vue/reactivity";
 import { BoardLayer, KeyLabel } from "../boardLayout";
 import LayoutKey from "./LayoutKey.vue";
 
@@ -24,15 +23,15 @@ const columns: LayerColumn[] = [
   // left
   {
     keys: props.layer.left.pinkyOuter as any,
-    styleClass: "mt-[100px] rotate-[-6deg]",
+    styleClass: "mt-[100px]",
   },
   {
     keys: props.layer.left.pinky as any,
-    styleClass: "mt-[55px] mr-1 rotate-[-6deg]",
+    styleClass: "mt-[55px]",
   },
   {
     keys: props.layer.left.ring as any,
-    styleClass: "mt-7 rotate-10 mr-1 rotate-[-3deg]",
+    styleClass: "mt-7",
   },
   {
     keys: props.layer.left.middle as any,
@@ -59,15 +58,15 @@ const columns: LayerColumn[] = [
   },
   {
     keys: props.layer.right.ring as any,
-    styleClass: "mt-7 rotate-10 mr-1 rotate-[3deg]",
+    styleClass: "mt-7 rotate-10",
   },
   {
     keys: props.layer.right.pinky as any,
-    styleClass: "mt-[55px] mr-1 rotate-[6deg]",
+    styleClass: "mt-[55px]",
   },
   {
     keys: props.layer.right.pinkyOuter as any,
-    styleClass: "mt-[100px] rotate-[6deg]",
+    styleClass: "mt-[100px]",
   },
 ];
 
@@ -130,8 +129,7 @@ const thumbs: LayerThumb[] = [
         :key="i"
         :label="t.key"
         :home="t.homeKey"
-        :class="`${t.styleClass} ${thumbShift}`"
-        class="flex flex-col"
+        :class="`flex flex-col ${t.styleClass} ${thumbShift}`"
       />
     </div>
   </div>

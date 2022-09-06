@@ -18,7 +18,7 @@ let layerChangeCount = ref(0);
 
 const layers = [
   alphaLayer,
-  null,
+  alphaLayer,
   navLayer,
   numLayer,
   symLayer,
@@ -46,12 +46,14 @@ if ((window as any).__TAURI__) {
 </script>
 
 <template>
-  <LayoutLayer
-    v-if="layer"
-    :layer="layer"
-    :key="layerChangeCount"
-    class="layout"
-  />
+  <div>
+    <LayoutLayer
+      v-if="layer"
+      :layer="layer"
+      :key="layerChangeCount"
+      class="layout"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
