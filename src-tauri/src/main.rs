@@ -42,8 +42,9 @@ enum BoardEvent {
 fn main() {
     let (ev_sender, ev_receiver) = channel::<BoardEvent>();
 
+    let hid_tx = ev_sender.clone();
     thread::spawn(move || {
-        run_hid_loop(ev_sender.clone());
+        run_hid_loop(hid_tx.clone());
     });
 
     let quit = CustomMenuItem::new(QUIT_ID.to_string(), "Quit");
@@ -54,6 +55,7 @@ fn main() {
         .add_item(quit);
     let tray = SystemTray::new().with_menu(tray_menu);
 
+    let app_tx = ev_sender.clone();
     tauri::Builder::default()
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
@@ -68,18 +70,27 @@ fn main() {
             },
             _ => {}
         })
-        .setup(|app| {
+        .setup(move |app| {
             let window = app.get_window("main").unwrap();
-
             // Global shortcuts
             let app_handle = app.handle();
-            app.global_shortcut_manager()
+            let mut shortcuts = app.global_shortcut_manager();
+            shortcuts
                 .register("CmdOrCtrl+F24", move || {
                     toggle_overlay(&app_handle.clone(), None)
                 })
                 .unwrap();
 
-            // HID events
+            for i in 0..=7 {
+                let tx = app_tx.clone();
+                shortcuts
+                    .register(&format!("CmdOrCtrl+F{}", i + 13), move || {
+                        tx.send(BoardEvent::Layer(i)).ok();
+                    })
+                    .unwrap();
+            }
+
+            // send events to client
             let app_handle = app.handle();
             thread::spawn(move || loop {
                 let app_handle = app_handle.clone();
@@ -133,58 +144,28 @@ fn toggle_overlay(app_handle: &AppHandle, show: Option<bool>) {
 }
 
 fn run_hid_loop(sender: Sender<BoardEvent>) {
-    let mut buff = [0; 2];
+    // todo: replace polling by OS events
+    let mut connected = false;
+    let mut hid_api = HidApi::new().expect("Couldn't create HIDApi");
     loop {
-        let mut hid_api = HidApi::new().expect("Couldn't create HIDApi");
-        let mut hid_device = None;
-        while hid_device.is_none() {
-            hid_device = hid_api.device_list().find_map(|dev| {
-                if dev.vendor_id() == HID_VENDOR_ID
-                    && dev.product_id() == HID_PROD_ID
-                    && dev.usage() == HID_USAGE
-                    && dev.usage_page() == HID_USAGE_PAGE
-                {
-                    let dev = Some(
-                        hid_api
-                            .open_path(dev.path())
-                            .expect("Couldn't connect to HID device"),
-                    );
-                    sender.send(BoardEvent::Connection(true)).unwrap();
-                    dev
-                } else {
-                    None
-                }
-            });
-
-            if hid_device.is_none() {
-                hid_api.refresh_devices().unwrap();
-                sleep(Duration::from_millis(1000));
+        let connected_now = hid_api.device_list().any(|dev| {
+            if dev.vendor_id() == HID_VENDOR_ID
+                && dev.product_id() == HID_PROD_ID
+                && dev.usage() == HID_USAGE
+                && dev.usage_page() == HID_USAGE_PAGE
+            {
+                true
+            } else {
+                false
             }
+        });
+
+        if connected != connected_now {
+            connected = connected_now;
+            sender.send(BoardEvent::Connection(connected)).unwrap();
         }
 
-        let hid_device = hid_device.unwrap();
-
-        loop {
-            match hid_device.read(&mut buff) {
-                Ok(_) => {
-                    println!("{:?}", buff);
-                    let ev_type = buff[0];
-                    let ev_val = buff[1];
-                    match ev_type {
-                        1 => sender.send(BoardEvent::Layer(ev_val)).unwrap(),
-                        2 => sender.send(BoardEvent::CapsWord(ev_val != 0)).unwrap(),
-                        3 => sender.send(BoardEvent::CapsLock(ev_val != 0)).unwrap(),
-                        4 => sender.send(BoardEvent::Shift(ev_val != 0)).unwrap(),
-                        _ => unimplemented!("Board event '{}' not implemended", ev_type),
-                    };
-                }
-                Err(e) => {
-                    eprintln!("HID read error: {}", e);
-                    break;
-                }
-            }
-        }
-
-        sender.send(BoardEvent::Connection(false)).unwrap();
+        sleep(Duration::from_millis(3000));
+        hid_api.refresh_devices().unwrap();
     }
 }
