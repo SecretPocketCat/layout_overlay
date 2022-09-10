@@ -181,8 +181,8 @@ export const uniLayer: BoardLayer = {
 // right thumb layers
 export const numLayer: BoardLayer = {
   left: {
-    pinkyOuter: ["|"],
-    pinky: ["<", "0", "ALT"],
+    pinkyOuter: [null],
+    pinky: [["<", "<¦>"], "0", "ALT"],
     ring: ["7", "1", ["4", "CTRL"]],
     middle: ["8", "2", "5"],
     index: ["9", "3", "6"],
@@ -192,9 +192,9 @@ export const numLayer: BoardLayer = {
   right: {
     indexOuter: [null, null],
     index: [null, "+", "WIN"],
-    middle: [null, "-", "SHFT"],
+    middle: [null, "/", "SHFT"],
     ring: [null, "*", "CTRL"],
-    pinky: [null, "/", "ALT"],
+    pinky: [null, "-", "ALT"],
     pinkyOuter: ["🔒"],
     thumb: [null, null, null],
   },
@@ -202,18 +202,22 @@ export const numLayer: BoardLayer = {
 
 export const symLayer: BoardLayer = {
   left: {
-    pinkyOuter: ["°"],
-    pinky: ["%", "Q", null],
+    pinkyOuter: ["\\"],
+    pinky: ["%", "Q", "°"],
     ring: ["^", "X", "@"],
-    middle: ["'", '"', "`"],
-    index: [["$", "€"], "&", "#"],
-    indexOuter: ["~", "\\"],
-    thumb: ["]", ":", "}"],
+    middle: ["#", ["{", "{¦}"], ["}", "{↵}"]],
+    index: [
+      ["$", "€"],
+      ["[", "[¦]"],
+      ["]", "[↵]"],
+    ],
+    indexOuter: ["~", "|"],
+    thumb: ["'", '"', "`"],
   },
   right: {
     indexOuter: [null, null],
-    index: [null, "[", "WIN"],
-    middle: [null, "{", "SHFT"],
+    index: [null, ":", "WIN"],
+    middle: [null, "&", "SHFT"],
     ring: [null, "_", "CTRL"],
     pinky: [null, ";", "ALT"],
     pinkyOuter: ["🔒"],
