@@ -228,10 +228,10 @@ export const symLayer: BoardLayer = {
 export const funLayer: BoardLayer = {
   left: {
     pinkyOuter: ["Prt Scr"],
-    pinky: ["F9", "F5", "F1"],
-    ring: ["F10", "F6", "F2"],
-    middle: ["F11", "F7", "F3"],
-    index: ["F12", "F8", "F4"],
+    pinky: ["F10", "F11", "F12"],
+    ring: ["F7", "F1", "F4"],
+    middle: ["F8", "F2", "F5"],
+    index: ["F9", "F3", "F6"],
     indexOuter: ["SCR↑", "SCR↓"],
     thumb: ["🐭CNST0", "🐭 LEFT", "🐭RIGHT"],
   },
