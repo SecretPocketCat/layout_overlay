@@ -3,6 +3,7 @@
     windows_subsystem = "windows"
 )]
 
+use event_loop::listen;
 use hidapi::HidApi;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Sender;
@@ -17,7 +18,10 @@ use tauri::SystemTray;
 use tauri::SystemTrayEvent;
 use tauri::SystemTrayMenu;
 use tauri::SystemTrayMenuItem;
+use tauri::WindowEvent;
 use window_vibrancy::apply_blur;
+
+mod event_loop;
 
 const QUIT_ID: &str = "quit";
 const TOGGLE_ID: &str = "toggle";
@@ -40,12 +44,7 @@ enum BoardEvent {
 }
 
 fn main() {
-    let (ev_sender, ev_receiver) = channel::<BoardEvent>();
-
-    let hid_tx = ev_sender.clone();
-    thread::spawn(move || {
-        run_hid_loop(hid_tx.clone());
-    });
+    let (ev_sender, ev_receiver) = crossbeam::channel::unbounded();
 
     let quit = CustomMenuItem::new(QUIT_ID.to_string(), "Quit");
     let hide = CustomMenuItem::new(TOGGLE_ID.to_string(), "Hide");
@@ -55,7 +54,7 @@ fn main() {
         .add_item(quit);
     let tray = SystemTray::new().with_menu(tray_menu);
 
-    let app_tx = ev_sender.clone();
+    let hid_tx = ev_sender.clone();
     tauri::Builder::default()
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
@@ -70,6 +69,15 @@ fn main() {
             },
             _ => {}
         })
+        .on_window_event(move |ev| match ev.event() {
+            WindowEvent::InputDeviceAdded | WindowEvent::InputDeviceRemoved => {
+                println!("device change!");
+                hid_tx
+                    .send(BoardEvent::Connection(check_board_connection()))
+                    .unwrap();
+            }
+            _ => {}
+        })
         .setup(move |app| {
             let window = app.get_window("main").unwrap();
             // Global shortcuts
@@ -82,7 +90,7 @@ fn main() {
                 .unwrap();
 
             for i in 0..=7 {
-                let tx = app_tx.clone();
+                let tx = ev_sender.clone();
                 shortcuts
                     .register(&format!("CmdOrCtrl+F{}", i + 13), move || {
                         tx.send(BoardEvent::Layer(i)).ok();
@@ -113,14 +121,16 @@ fn main() {
                 };
             });
 
-            // todo:
-            // tao
-            // window.set_ignore_cursor_events(true);
+            window.set_ignore_cursor_events(true).unwrap();
 
             // window blur
             #[cfg(target_os = "windows")]
             apply_blur(&window, None)
                 .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+
+            listen(window.hwnd().unwrap().0);
+
+            toggle_overlay(&app.handle(), Some(check_board_connection()));
 
             Ok(())
         })
@@ -143,29 +153,19 @@ fn toggle_overlay(app_handle: &AppHandle, show: Option<bool>) {
     }
 }
 
-fn run_hid_loop(sender: Sender<BoardEvent>) {
-    // todo: replace polling by OS events
-    let mut connected = false;
-    let mut hid_api = HidApi::new().expect("Couldn't create HIDApi");
-    loop {
-        let connected_now = hid_api.device_list().any(|dev| {
-            if dev.vendor_id() == HID_VENDOR_ID
-                && dev.product_id() == HID_PROD_ID
-                && dev.usage() == HID_USAGE
-                && dev.usage_page() == HID_USAGE_PAGE
-            {
-                true
-            } else {
-                false
-            }
-        });
-
-        if connected != connected_now {
-            connected = connected_now;
-            sender.send(BoardEvent::Connection(connected)).unwrap();
+fn check_board_connection() -> bool {
+    let hid_api = HidApi::new().expect("Couldn't create HIDApi");
+    let connected = hid_api.device_list().any(|dev| {
+        if dev.vendor_id() == HID_VENDOR_ID
+            && dev.product_id() == HID_PROD_ID
+            && dev.usage() == HID_USAGE
+            && dev.usage_page() == HID_USAGE_PAGE
+        {
+            true
+        } else {
+            false
         }
+    });
 
-        sleep(Duration::from_millis(3000));
-        hid_api.refresh_devices().unwrap();
-    }
+    connected
 }
