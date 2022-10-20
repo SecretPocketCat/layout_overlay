@@ -7,6 +7,8 @@ use event_loop::listen;
 use hidapi::HidApi;
 use std::sync::mpsc::channel;
 use std::sync::mpsc::Sender;
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::thread;
 use std::thread::sleep;
 use std::time::Duration;
@@ -19,6 +21,7 @@ use tauri::SystemTrayEvent;
 use tauri::SystemTrayMenu;
 use tauri::SystemTrayMenuItem;
 use tauri::WindowEvent;
+use throttle::Throttle;
 use window_vibrancy::apply_blur;
 
 mod event_loop;
@@ -55,6 +58,8 @@ fn main() {
     let tray = SystemTray::new().with_menu(tray_menu);
 
     let hid_tx = ev_sender.clone();
+    let throttle = Mutex::new(Throttle::new(Duration::from_millis(100), 1));
+
     tauri::Builder::default()
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
@@ -71,10 +76,11 @@ fn main() {
         })
         .on_window_event(move |ev| match ev.event() {
             WindowEvent::InputDeviceAdded | WindowEvent::InputDeviceRemoved => {
-                println!("device change!");
-                hid_tx
-                    .send(BoardEvent::Connection(check_board_connection()))
-                    .unwrap();
+                if throttle.lock().unwrap().accept().is_ok() {
+                    hid_tx
+                        .send(BoardEvent::Connection(check_board_connection()))
+                        .unwrap();
+                }
             }
             _ => {}
         })
