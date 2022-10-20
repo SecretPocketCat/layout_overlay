@@ -5,12 +5,8 @@
 
 use event_loop::listen;
 use hidapi::HidApi;
-use std::sync::mpsc::channel;
-use std::sync::mpsc::Sender;
-use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread;
-use std::thread::sleep;
 use std::time::Duration;
 use tauri::AppHandle;
 use tauri::CustomMenuItem;
@@ -134,7 +130,7 @@ fn main() {
             apply_blur(&window, None)
                 .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
-            listen(window.hwnd().unwrap().0);
+            listen();
 
             toggle_overlay(&app.handle(), Some(check_board_connection()));
 
@@ -162,15 +158,10 @@ fn toggle_overlay(app_handle: &AppHandle, show: Option<bool>) {
 fn check_board_connection() -> bool {
     let hid_api = HidApi::new().expect("Couldn't create HIDApi");
     let connected = hid_api.device_list().any(|dev| {
-        if dev.vendor_id() == HID_VENDOR_ID
+        dev.vendor_id() == HID_VENDOR_ID
             && dev.product_id() == HID_PROD_ID
             && dev.usage() == HID_USAGE
             && dev.usage_page() == HID_USAGE_PAGE
-        {
-            true
-        } else {
-            false
-        }
     });
 
     connected
