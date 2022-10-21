@@ -3,7 +3,6 @@
     windows_subsystem = "windows"
 )]
 
-use event_loop::listen;
 use hidapi::HidApi;
 use std::sync::Mutex;
 use std::thread;
@@ -18,9 +17,10 @@ use tauri::SystemTrayMenu;
 use tauri::SystemTrayMenuItem;
 use tauri::WindowEvent;
 use throttle::Throttle;
+use window_focus::listen_for_focus_events;
 use window_vibrancy::apply_blur;
 
-mod event_loop;
+mod window_focus;
 
 const QUIT_ID: &str = "quit";
 const TOGGLE_ID: &str = "toggle";
@@ -34,12 +34,19 @@ const HID_USAGE: u16 = 0x61;
 const HID_USAGE_PAGE: u16 = 0xFF60;
 
 #[derive(Debug)]
-enum BoardEvent {
+pub enum BoardEvent {
     Connection(bool),
     Layer(u8),
     CapsWord(bool),
     CapsLock(bool),
     Shift(bool),
+    AppFocus(Option<App>),
+}
+
+#[derive(Debug)]
+pub enum App {
+    Code,
+    Blender,
 }
 
 fn main() {
@@ -120,6 +127,9 @@ fn main() {
                     BoardEvent::Shift(active) => {
                         app_handle.emit_all(SHIFT_EV, active).unwrap();
                     }
+                    BoardEvent::AppFocus(app) => {
+                        println!("Focus on {:?}", app);
+                    }
                 };
             });
 
@@ -130,7 +140,7 @@ fn main() {
             apply_blur(&window, None)
                 .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
-            listen();
+            listen_for_focus_events(ev_sender.clone());
 
             toggle_overlay(&app.handle(), Some(check_board_connection()));
 

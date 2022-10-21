@@ -1,5 +1,6 @@
 use crossbeam::channel::{unbounded, Receiver, Sender};
 use once_cell::sync::Lazy;
+use regex::Regex;
 use std::ptr;
 use winapi::shared::minwindef::{DWORD, LPARAM, UINT, WPARAM};
 use winapi::shared::ntdef::LONG;
@@ -8,6 +9,8 @@ use winapi::um::winuser::{
     DispatchMessageW, GetMessageW, SetWinEventHook, TranslateMessage, UnhookWinEvent,
     EVENT_SYSTEM_FOREGROUND, MSG, WINEVENT_OUTOFCONTEXT, WM_QUIT,
 };
+
+use crate::{App, BoardEvent};
 
 static CHANNEL: Lazy<(Sender<Event>, Receiver<Event>)> = Lazy::new(unbounded);
 
@@ -22,9 +25,30 @@ pub struct WindowInfo {
     title: Option<String>,
 }
 
-pub fn listen() {
-    std::thread::spawn(|| loop {
-        let ev = CHANNEL.1.recv().unwrap();
+impl WindowInfo {
+    fn get_focused_app(&self) -> Option<App> {
+        // println!("{:?}", self);
+        if let Some(ref path) = self.exe_path {
+            let code_re = Regex::new(r"(?i)[/\\]code.exe").unwrap();
+            let blender_re = Regex::new(r"(?i)[/\\]blender.exe").unwrap();
+            if code_re.is_match(path) {
+                return Some(App::Code);
+            } else if blender_re.is_match(path) {
+                return Some(App::Blender);
+            }
+        }
+
+        None
+    }
+}
+
+pub fn listen_for_focus_events(sender: Sender<BoardEvent>) {
+    std::thread::spawn(move || loop {
+        match CHANNEL.1.recv().unwrap() {
+            Event::WindowFocus(win) => sender
+                .send(BoardEvent::AppFocus(win.get_focused_app()))
+                .unwrap(),
+        };
     });
 
     unsafe {
@@ -78,8 +102,6 @@ extern "system" fn win_event_hook_callback(
     _event_thread: DWORD,
     _event_time: DWORD,
 ) {
-    println!("ev {event}");
-
     match event {
         EVENT_SYSTEM_FOREGROUND => {
             let title = windows_win::raw::window::get_text(h_wnd).ok();
