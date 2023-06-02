@@ -136,7 +136,7 @@ fn main() {
                 };
             });
 
-            // window.set_ignore_cursor_events(true).unwrap();
+            window.set_ignore_cursor_events(true).unwrap();
 
             // window blur
             #[cfg(target_os = "windows")]
