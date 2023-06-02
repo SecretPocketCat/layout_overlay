@@ -1,31 +1,21 @@
 <script setup lang="ts">
-import {
-  alphaLayer,
-  BoardLayer,
-  navLayer,
-  numLayer,
-  symLayer,
-  funLayer,
-  winLayer,
-  uniLayer,
-} from "./boardLayout";
+import { layout, BoardLayer, getLayerFromIndex } from "./boardLayout";
+import { appLayouts, LayoutApp } from "./appLayouts";
 import LayoutLayer from "./Components/LayoutLayer.vue";
 import { onMounted, onUnmounted, Ref, ref } from "vue";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
+import { computed } from "@vue/reactivity";
 
-let layer: Ref<BoardLayer | null> = ref(alphaLayer);
+let layerIndex: Ref<number> = ref(0);
+let appIndex: Ref<LayoutApp | null> = ref(null);
 let layerChangeCount = ref(0);
 
-const layers = [
-  alphaLayer,
-  alphaLayer,
-  navLayer,
-  numLayer,
-  symLayer,
-  funLayer,
-  uniLayer,
-  winLayer,
-];
+const layer = computed(() => {
+  const layer = getLayerFromIndex(layerIndex.value);
+  const appLayout =
+    appIndex.value != null ? appLayouts[appIndex.value][layer] : null;
+  return appLayout || layout[layer];
+});
 
 if ((window as any).__TAURI__) {
   const unlisten: UnlistenFn[] = [];
@@ -33,8 +23,15 @@ if ((window as any).__TAURI__) {
   onMounted(async () => {
     unlisten.push(
       await listen<number>("layer", (ev) => {
-        layer.value = layers[ev.payload];
+        layerIndex.value = ev.payload;
         layerChangeCount.value++;
+      }),
+      await listen<number>("app", (ev) => {
+        if (ev.payload != appIndex.value) {
+          console.warn("app change", ev.payload);
+          appIndex.value = ev.payload;
+          layerChangeCount.value++;
+        }
       })
     );
   });

@@ -25,6 +25,7 @@ mod window_focus;
 const QUIT_ID: &str = "quit";
 const TOGGLE_ID: &str = "toggle";
 const LAYER_EV: &str = "layer";
+const APP_EV: &str = "app";
 const CAPS_WORD_EV: &str = "capsword";
 const CAPS_LOCK_EV: &str = "capslock";
 const SHIFT_EV: &str = "shift";
@@ -43,7 +44,7 @@ pub enum BoardEvent {
     AppFocus(Option<App>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum App {
     Code,
     Blender,
@@ -128,12 +129,14 @@ fn main() {
                         app_handle.emit_all(SHIFT_EV, active).unwrap();
                     }
                     BoardEvent::AppFocus(app) => {
-                        println!("Focus on {:?}", app);
+                        app_handle
+                            .emit_all(APP_EV, app.map_or(None, |app| Some(app as u8)))
+                            .unwrap();
                     }
                 };
             });
 
-            window.set_ignore_cursor_events(true).unwrap();
+            // window.set_ignore_cursor_events(true).unwrap();
 
             // window blur
             #[cfg(target_os = "windows")]

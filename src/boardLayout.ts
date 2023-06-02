@@ -1,3 +1,4 @@
+import { type } from "os";
 import { FixedArray } from "./array";
 
 interface StyledLabel {
@@ -30,12 +31,28 @@ export interface BoardLayer {
 
 export enum Layer {
   alpha = "ALPHA",
+  qwerty = "QWERTY",
   nav = "NAV",
   num = "NUM",
   sym = "SYM",
   fun = "FUN",
   win = "WIN",
   uni = "UNI",
+}
+
+const orderedLayers = [
+  Layer.alpha,
+  Layer.qwerty,
+  Layer.nav,
+  Layer.num,
+  Layer.sym,
+  Layer.fun,
+  Layer.uni,
+  Layer.win,
+];
+
+export function getLayerFromIndex(index: number): Layer {
+  return orderedLayers[index] ?? Layer.alpha;
 }
 
 export const alphaLayer: BoardLayer = {
@@ -244,4 +261,18 @@ export const funLayer: BoardLayer = {
     pinkyOuter: ["🔒"],
     thumb: [null, null, null],
   },
+};
+
+export type Layout = { [key in Layer]: BoardLayer | null };
+export type OptionalLayout = { [key in Layer]?: BoardLayer | null };
+
+export const layout: Layout = {
+  ALPHA: alphaLayer,
+  NAV: navLayer,
+  NUM: numLayer,
+  SYM: symLayer,
+  FUN: funLayer,
+  WIN: winLayer,
+  UNI: uniLayer,
+  QWERTY: null,
 };
