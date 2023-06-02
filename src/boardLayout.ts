@@ -1,4 +1,3 @@
-import { type } from "os";
 import { FixedArray } from "./array";
 
 interface StyledLabel {
