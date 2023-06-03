@@ -58,7 +58,7 @@ if ((window as any).__TAURI__) {
   height: 100%;
   flex-grow: 1;
   align-self: stretch;
-  background-color: rgba(73, 73, 73, 0.25);
+  background-color: rgba(60, 60, 60, 0.5);
   border: 5px solid rgba(43, 43, 43, 0.3);
   padding: 10px 5px 0 5px;
   border-radius: 3px;
