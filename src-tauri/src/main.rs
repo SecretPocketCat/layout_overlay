@@ -18,7 +18,7 @@ use tauri::SystemTrayMenuItem;
 use tauri::WindowEvent;
 use throttle::Throttle;
 use window_focus::listen_for_focus_events;
-use window_vibrancy::apply_blur;
+// use window_vibrancy::apply_blur;
 
 mod window_focus;
 
@@ -138,10 +138,11 @@ fn main() {
 
             window.set_ignore_cursor_events(true).unwrap();
 
-            // window blur
-            #[cfg(target_os = "windows")]
-            apply_blur(&window, None)
-                .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+            // todo: broken
+            // // window blur
+            // #[cfg(target_os = "windows")]
+            // apply_acrylic(&window, Some((200, 0, 0, 50)))
+            //     .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
             listen_for_focus_events(ev_sender.clone());
 
