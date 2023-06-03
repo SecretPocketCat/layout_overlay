@@ -1,7 +1,7 @@
 import { Layer, OptionalLayout } from "./boardLayout";
 
 export enum LayoutApp {
-  Code,
+  // Code,
   Blender,
   DaVinciResolve,
 }
@@ -102,7 +102,7 @@ const resolveLayout: OptionalLayout = {
 };
 
 export const appLayouts: { [key in LayoutApp]: OptionalLayout } = {
-  [LayoutApp.Code]: codeLayout,
+  // [LayoutApp.Code]: codeLayout,
   [LayoutApp.Blender]: blenderLayout,
   [LayoutApp.DaVinciResolve]: resolveLayout,
 };
