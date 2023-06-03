@@ -67,7 +67,7 @@
         "fileDropEnabled": false,
         "transparent": true,
         "decorations": false,
-        "alwaysOnTop": true,
+        "alwaysOnTop": false,
         "focus": false,
         "visible": true,
         "skipTaskbar": true
